@@ -6,7 +6,10 @@ LIBS=-L$(PYTORCH_BLD)/lib
 
 
 all:
-	/usr/bin/gcc -c c10dict.cpp -o c10dict.o $(HEADERS) -std=c++20 -O1
-	/usr/bin/gcc -c c10list.cpp -o c10list.o $(HEADERS) -std=c++20 -O1
-	/usr/bin/g++  c10dict.o c10list.o main.cpp -o main $(HEADERS)  $(LIBS) -lc10 -ltorch -ltorch_cpu -O1 -std=c++20
+	/usr/bin/gcc -c c10dict.cpp -o c10dict.o $(HEADERS) -std=c++17
+	/usr/bin/gcc -c c10list.cpp -o c10list.o $(HEADERS) -std=c++17
+	/usr/bin/gcc -dynamiclib  -o libmain.dylib   -undefined dynamic_lookup -single_module -install_name '@rpath/libmain.dylib'c10dict.o c10list.o  $(LIBS) -lc10 -ltorch -ltorch_cpu '-lc++'
+	gcc -dynamiclib -o libmain.dylib -undefined dynamic_lookup -single_module -install_name '@rpath/libHSlibtorch-ffi-2.0.0.0-inplace-ghc9.6.3.dylib' c10dict.o c10list.o $(LIBS) -lc10 -ltorch -ltorch_cpu '-lc++'
 
+haskell:
+	gcc -dynamiclib -o libmain.dylib -undefined dynamic_lookup -single_module -install_name '@rpath/libHSlibtorch-ffi-2.0.0.0-inplace-ghc9.6.3.dylib' C10Dict.dyn_o C10List.dyn_o $(LIBS) -lc10 -ltorch -ltorch_cpu '-lc++'
